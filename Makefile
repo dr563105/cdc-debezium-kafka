@@ -12,9 +12,6 @@ pg:
 up:
 	docker-compose up -d
 
-# remove-minio:
-# 	sudo rm -rf minio/
-
 compose-down:
 	docker-compose down -v
 

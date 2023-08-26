@@ -1,7 +1,7 @@
 {
     "name": "s3-sink",
     "config": {
-        "connector.class": "io.confluent.connect.s3.S3SinkConnector",
+        "connector.class": "io.aiven.kafka.connect.s3.AivenKafkaConnectS3SinkConnector",
         "aws.access.key.id": "${AWS_KEY_ID}",
         "aws.secret.access.key": "${AWS_SECRET_KEY}",
         "aws.s3.bucket.name": "commerce",

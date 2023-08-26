@@ -24,7 +24,6 @@ services:
       - cdc_commerce_postgres
     
   kafka:
-    container_name: mykafka
     image: debezium/kafka:latest
     ports:
       - "9093:9093"

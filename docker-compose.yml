@@ -17,8 +17,7 @@ services:
       - "2181:2181"
   
   datagen:
-    build:
-      dockerfile: ./generate-data/Dockerfile
+    build: ./generate-data
     container_name: datagen
     restart: on-failure
     depends_on:
@@ -39,7 +38,7 @@ services:
       - zookeeper
   
   avien-sink-connect:
-    image: debezium/connect:latest
+    build: ./sink-connector
     ports:
       - "8083:8083"
     environment:
@@ -51,11 +50,6 @@ services:
     depends_on:
       - zookeeper
       - kafka
-    command: >
-        bash -c "curl --create-dirs -LO --output-dir /tmp/connector https://github.com/aiven/s3-connector-for-apache-kafka/releases/download/v2.13.0/aiven-kafka-connect-s3-2.13.0.zip && \
-        unzip -o /tmp/connector/aiven-kafka-connect-s3-2.13.0.zip -d /tmp/connector && \
-        mv /tmp/connector/aiven-kafka-connect-s3-2.13.0 /kafka/connect/aiven-kafka-connect-s3 && \
-        rm /tmp/connector/aiven-kafka-connect-s3-2.13.0.zip"
 
   minio:
     image: minio/minio:RELEASE.2023-08-23T10-07-06Z

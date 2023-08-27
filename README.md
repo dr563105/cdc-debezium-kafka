@@ -40,7 +40,8 @@ Now we're ready to execute our project.
 cd dbz-kafka-pg
 export POSTGRES_USER=postgres
 export POSTGRES_PASSWORD=postgres
-export POSTGRES_DB=cdc_demo
+export POSTGRES_DB=cdc-demo-db
+export POSTGRES_HOST=postgres
 export AWS_KEY_ID=minio
 export AWS_SECRET_KEY=minio123
 make up # runs all docker containers

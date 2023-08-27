@@ -11,4 +11,4 @@ RUN pipenv install --system --deploy
 
 COPY [ "user_product_data.py" , "./" ]
 
-CMD ["python" ,"user_product_data.py"]
+CMD ["python" ,"./user_product_data.py"]

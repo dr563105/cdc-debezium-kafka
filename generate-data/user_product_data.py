@@ -18,7 +18,7 @@ def gen_user_product_data(num_records: int) -> None:
     # connection = (f"dbname={POSTGRES_DB} user={POSTGRES_USER} password={POSTGRES_PASSWORD} host={POSTGRES_HOSTNAME}")
     for id in range(num_records):
         id +=1
-        # sleep(0.5)
+        sleep(0.5)
         conn = psycopg2.connect(database=f'{POSTGRES_DB}',
                                 user=f'{POSTGRES_USER}',
                                 password=f'{POSTGRES_PASSWORD}',
@@ -36,7 +36,7 @@ def gen_user_product_data(num_records: int) -> None:
         )
         conn.commit()
 
-        # sleep(0.5)
+        sleep(0.5)
         # update 10 % of the time
         if random.randint(1, 100) >= 90:
             curr.execute(
@@ -51,7 +51,7 @@ def gen_user_product_data(num_records: int) -> None:
             )
         conn.commit()
 
-        # sleep(0.5)
+        sleep(0.5)
         # delete 5 % of the time
         if random.randint(1, 100) >= 95:
             curr.execute("DELETE FROM commerce.users WHERE id = %s",(id,))

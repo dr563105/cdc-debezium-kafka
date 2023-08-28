@@ -1,6 +1,7 @@
 version: "2"
 services:
   cdc_commerce_postgres:
+    container_name: source-db
     image: debezium/postgres:13-alpine
     hostname: ${POSTGRES_HOST}
     ports:
@@ -22,10 +23,12 @@ services:
 
   zookeeper:
     image: debezium/zookeeper:2.4
+    container_name: zookeeper
     ports:
       - "2181:2181"
     
   kafka:
+    container_name: kafka
     image: debezium/kafka:latest
     ports:
       - "9093:9093"
@@ -38,7 +41,8 @@ services:
     depends_on:
       - zookeeper
   
-  avien-sink-connect:
+  debezium-connect:
+    container_name: debezium-connect
     build: ./sink-connector
     ports:
       - "8083:8083"

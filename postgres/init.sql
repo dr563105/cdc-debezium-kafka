@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS products (
    id int PRIMARY KEY, 
    name VARCHAR(255) NOT NULL,
    description TEXT,
-   price NUMERIC(5,2) NOT NULL
+   price REAL NOT NULL
 );
 
 ALTER TABLE users REPLICA IDENTITY FULL;

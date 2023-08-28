@@ -32,7 +32,7 @@ def gen_user_product_data(num_records: int) -> None:
         curr.execute(
             f"INSERT INTO \
                 commerce.products (id, name, description, price) \
-                VALUES (%s, %s, %s, %s)", (id, fake.name(), fake.text(), (fake.random_int(min=1, max=999))/100)
+                VALUES (%s, %s, %s, %s)", (id, fake.name(), fake.text(), (fake.random_int(min=1, max=999_999))/100.0)
         )
         conn.commit()
 

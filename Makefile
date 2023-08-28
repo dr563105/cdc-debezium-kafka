@@ -23,5 +23,3 @@ s3-sink:
 
 connections: 
 	source ./connectors/setup-connections.sh
-
-connectors: pg-src s3-sink

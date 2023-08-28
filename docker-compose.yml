@@ -62,8 +62,8 @@ services:
     volumes:
       - "./minio/data:/data"
     environment:
-      MINIO_ACCESS_KEY: minio #$AWS_KEY_ID
-      MINIO_SECRET_KEY: minio123 #$AWS_SECRET_KEY
+      MINIO_ACCESS_KEY: ${AWS_KEY_ID}
+      MINIO_SECRET_KEY: ${AWS_SECRET_KEY}
     command: server --console-address ":9001" /data
 
   createbuckets:
@@ -72,5 +72,4 @@ services:
     depends_on:
       - minio
     entrypoint: >
-      /bin/sh -c "  /usr/bin/mc config host add myminio http://minio:9000 minio minio123; /usr/bin/mc rm -rf myminio/commerce;  /usr/bin/mc mb myminio/commerce;  /usr/bin/mc policy download myminio/commerce;  /usr/bin/mc cp /tmp/data myminio/commerce; exit 0;  "
-
+      /bin/sh -c "  /usr/bin/mc config host add myminio http://minio:9000 ${AWS_KEY_ID} ${AWS_SECRET_KEY}; /usr/bin/mc rm -rf myminio/commerce;  /usr/bin/mc mb myminio/commerce;  /usr/bin/mc policy set public myminio/commerce; exit 0; "

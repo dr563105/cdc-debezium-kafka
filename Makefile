@@ -21,4 +21,7 @@ pg-src:
 s3-sink:
 	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '@./connectors/s3-sink.json'
 
+connections: 
+	source ./connectors/setup-connections.sh
+
 connectors: pg-src s3-sink

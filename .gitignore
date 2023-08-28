@@ -1,2 +1,4 @@
 minio/
 duckdb
+psql_vol/
+secrets/

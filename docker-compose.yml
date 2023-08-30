@@ -83,7 +83,9 @@ services:
     environment:
       MINIO_ACCESS_KEY: ${AWS_KEY_ID}
       MINIO_SECRET_KEY: ${AWS_SECRET_KEY}
-    command: server --console-address ":9001" /data
+    command: [ "server", "/data", "--console-address", ":9001" ]
+    networks:
+      - my_network
 
   createbuckets:
     image: minio/mc
@@ -92,6 +94,8 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "  /usr/bin/mc config host add myminio http://minio:9000 ${AWS_KEY_ID} ${AWS_SECRET_KEY}; /usr/bin/mc rm -rf myminio/commerce;  /usr/bin/mc mb myminio/commerce;  /usr/bin/mc policy set public myminio/commerce; exit 0; "
+    networks:
+      - my_network
 
 networks:
   my_network:

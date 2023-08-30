@@ -13,6 +13,8 @@ services:
     volumes:
       - "./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql"
       - "./psql_vol:/var/lib/postgresql/data:rw"
+    networks:
+      - my_network
 
   datagen:
     build: ./generate-data
@@ -25,12 +27,16 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
     depends_on:
       - cdc_commerce_postgres
+    networks:
+      - my_network
 
   zookeeper:
     image: debezium/zookeeper:2.4
     container_name: zookeeper
     ports:
       - "2181:2181"
+    networks:
+      - my_network
     
   kafka:
     container_name: kafka
@@ -45,6 +51,8 @@ services:
       - KAFKA_INTER_BROKER_LISTENER_NAME=LISTENER_INT
     depends_on:
       - zookeeper
+    networks:
+      - my_network
   
   debezium-connect:
     container_name: debezium-connect
@@ -60,6 +68,8 @@ services:
     depends_on:
       - zookeeper
       - kafka
+    networks:
+      - my_network
 
   minio:
     image: minio/minio:RELEASE.2022-05-26T05-48-41Z
@@ -82,3 +92,6 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "  /usr/bin/mc config host add myminio http://minio:9000 ${AWS_KEY_ID} ${AWS_SECRET_KEY}; /usr/bin/mc rm -rf myminio/commerce;  /usr/bin/mc mb myminio/commerce;  /usr/bin/mc policy set public myminio/commerce; exit 0; "
+
+networks:
+  my_network:

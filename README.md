@@ -1,6 +1,6 @@
 # Project - Change Capture Data with Debezium, Apache Kafka and PostgreSQL
 
-Associated blog post for this project - 
+Associated blog post for this project - https://dr563105.github.io/posts/2023-08-29-cdc-debezium-kafka-pg/
 
 ## Objective
 Observe and monitor a postgres DB source with a schema `commerce` and tables `users` and `products`. When there is a change in their rows, we will capture those changed data, send it downstream through Apache Kafka and make it available for analytics through `duckDB`.
@@ -60,5 +60,5 @@ To bring down all container and return to the original state, run the following 
 ```{.bash filename="restoring to original state"}
 make down #shuts down all project processes and docker containers
 # to delete minio buckets with json files
-sudo rm -rf minio/
+sudo rm -rf minio/ psql_vol/
 ```

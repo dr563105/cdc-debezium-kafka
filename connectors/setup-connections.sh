@@ -46,7 +46,6 @@ curl --include --request POST --header "Accept:application/json" \
             "topics": "debezium.commerce.users,debezium.commerce.products",
             "file.compression.type": "none",
             "flush.size": "20",
-            "timestamp.timezone": "Asia/Kolkata",
             "file.name.template": "/{{topic}}/{{timestamp:unit=yyyy}}-{{timestamp:unit=MM}}-{{timestamp:unit=dd}}/{{timestamp:unit=HH}}/{{partition:padding=true}}-{{start_offset:padding=true}}.json"
         }
     }'

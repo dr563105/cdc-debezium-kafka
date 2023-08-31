@@ -3,7 +3,7 @@
     "config": {
         "connector.class": "io.aiven.kafka.connect.s3.AivenKafkaConnectS3SinkConnector",
         "aws.access.key.id": "<replace with key id>",
-        "aws.secret.access.key": "<replac with secret access key>",
+        "aws.secret.access.key": "<replace with secret access key>",
         "aws.s3.bucket.name": "<replace bucket name>",
         "aws.s3.endpoint": "http://minio:9000",
         "aws.s3.region": "us-east-1",

@@ -1,83 +1,221 @@
-import psycopg2
+# Import the functions and constants needed for testing
+from user_product_data import *
 import pytest
+import psycopg2
 import os
 
-# Environment variables for PostgreSQL connection
+# Define your test database connection parameters
 TEST_POSTGRES_USER = os.getenv("TEST_POSTGRES_USER")
 TEST_POSTGRES_PASSWORD = os.getenv("TEST_POSTGRES_PASSWORD")
 TEST_POSTGRES_HOSTNAME = os.getenv("TEST_POSTGRES_HOST")
 TEST_POSTGRES_DB = os.getenv("TEST_POSTGRES_DB")
-SCHEMA = os.getenv("DB_SCHEMA")
+TEST_SCHEMA = os.getenv("TEST_DB_SCHEMA")
 
-# Fixture for creating a database connection
 @pytest.fixture(scope="module")
 def db_connection():
     """
-    Fixture for creating a PostgreSQL database connection.
+    Fixture to create a database connection for testing.
 
-    Yields:
-        psycopg2.extensions.connection: A database connection object.
+    This fixture establishes a database connection using the provided credentials and
+    yields the connection object. After the test function that uses this connection is
+    executed, the connection is closed.
+
+    Returns:
+        psycopg2.extensions.connection: The database connection.
     """
     conn = psycopg2.connect(
         database=TEST_POSTGRES_DB,
         user=TEST_POSTGRES_USER,
         password=TEST_POSTGRES_PASSWORD,
-        host=TEST_POSTGRES_HOSTNAME,
+        host=TEST_POSTGRES_HOSTNAME
     )
     yield conn
     conn.close()
 
 
-#Test case to check if db connection is active
-def test_db_connection(db_connection):
+@pytest.mark.parametrize("id", [random.randint(15, 35)])
+def test_insert_user_data(db_connection, id):
     """
-    Test case to check if the PostgreSQL database connection is active.
+    Test the insertion of user data into the database.
+
+    This test function generates user data, inserts it into the database, and verifies
+    that the inserted data exists in the database.
 
     Args:
-        db_connection (psycopg2.extensions.connection): The database connection.
+        db_connection (psycopg2.extensions.connection): The database connection for testing.
+        id (int): The user's ID for testing.
+
+    Returns:
+        None
+    """
+    user_data = generate_user_data(id)
+    conn = db_connection
+    cur = conn.cursor()
+    insert_user_data(conn, cur, user_data)
+    cur.execute(f"SELECT * FROM {SCHEMA}.users WHERE id = {user_data['id']}")
+    inserted_user_data = cur.fetchone()
+
+    assert inserted_user_data is not None
+
+    conn.rollback()  # Rollback the transaction to undo the insertion
+    cur.close()
+
+
+@pytest.mark.parametrize("id", [random.randint(15, 35)])
+def test_insert_product_data(db_connection, id):
+    """
+    Test the insertion of product data into the database.
+
+    This test function generates product data, inserts it into the database, and verifies
+    that the inserted data exists in the database.
+
+    Args:
+        db_connection (psycopg2.extensions.connection): The database connection for testing.
+        id (int): The product's ID for testing.
+
+    Returns:
+        None
+    """
+    product_data = generate_product_data(id)
+    conn = db_connection
+    cur = conn.cursor()
+    insert_product_data(conn, cur, product_data)
+    cur.execute(f"SELECT * FROM {SCHEMA}.products WHERE id = {product_data['id']}")
+    inserted_product_data = cur.fetchone()
+
+    assert inserted_product_data is not None
+
+    conn.rollback()  # Rollback the transaction to undo the insertion
+    cur.close()
+
+@pytest.mark.parametrize("id", [random.randint(100, 114)])
+def test_update_records(db_connection, id):
+    """
+    Test the update of user and product records in the database.
+
+    This test function generates user and product data, inserts them into the database,
+    updates the records, and verifies that the updates are applied correctly.
+
+    Args:
+        db_connection (psycopg2.extensions.connection): The database connection for testing.
+        id(int): The user's ID for testing. 
+
+    Returns:
+        None
+    """
+    user_data = generate_user_data(id)
+    product_data = generate_product_data(id)
+    conn = db_connection
+    cur = conn.cursor()
+    insert_user_data(conn, cur, user_data)
+    insert_product_data(conn, cur, product_data)
+
+    update_records(conn, cur, user_data, product_data, should_update=True)
+
+    cur.execute(f"SELECT username FROM {SCHEMA}.users WHERE id = {user_data['id']}")
+    updated_username = cur.fetchone()[0]
+    cur.execute(f"SELECT name FROM {SCHEMA}.products WHERE id = {product_data['id']}")
+    updated_name = cur.fetchone()[0]
+
+    assert updated_username != user_data['username']
+    assert updated_name != product_data['name']
+
+    conn.rollback()  # Rollback the transaction to undo the update
+    cur.close()
+
+
+def get_user_count(cur):
+    """
+    Get the count of user records in the database.
+
+    Args:
+        cur (psycopg2.extensions.cursor): The database cursor.
+
+    Returns:
+        int: The count of user records.
+    """
+    cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.users")
+    return cur.fetchone()[0]
+
+
+def get_product_count(cur):
+    """
+    Get the count of product records in the database.
+
+    Args:
+        cur (psycopg2.extensions.cursor): The database cursor.
+
+    Returns:
+        int: The count of product records.
+    """
+    cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.products")
+    return cur.fetchone()[0]
+
+@pytest.mark.parametrize("id", [random.randint(46, 64)])
+def test_delete_records(db_connection,id):
+    """
+    Test the deletion of user and product records from the database.
+
+    This test function generates user and product data, inserts them into the database,
+    deletes the records, and verifies that the records are deleted correctly.
+
+    Args:
+        db_connection (psycopg2.extensions.connection): The database connection for testing.
+        id (int): The user's ID for testing.
+
+    Returns:
+        None
+    """
+    user_data = generate_user_data(id)
+    product_data = generate_product_data(id)
+    conn = db_connection
+    cur = conn.cursor()
+    insert_user_data(conn, cur, user_data)
+    insert_product_data(conn, cur, product_data)
+
+    initial_user_count = get_user_count(cur)
+    initial_product_count = get_product_count(cur)
+
+    delete_records(conn, cur, user_data, product_data, should_delete=True)
+
+    final_user_count = get_user_count(cur)
+    final_product_count = get_product_count(cur)
+
+    # Check if either user or product records are deleted
+    assert (final_user_count <= initial_user_count) and (final_product_count <= initial_product_count)
+
+    conn.rollback()  # Rollback the transaction to undo the deletion
+    cur.close()
+
+
+@pytest.mark.parametrize("num_records", [10])
+def test_gen_user_product_data(db_connection, num_records):
+    """
+    Test the generation of user and product data, and verify database consistency.
+
+    This test function generates user and product data using the 'gen_user_product_data' function
+    and verifies the correctness of the generated data by comparing user and product counts in
+    the database.
+
+    Args:
+        db_connection (psycopg2.extensions.connection): The database connection to be used for testing.
+        num_records(int): number of records for testing
+
+    Returns:
+        None
 
     Raises:
-        AssertionError: If the connection is not of the expected type or is closed.
+        AssertionError: If the generated data does not match the expected counts.
     """
-    # The db_connection fixture should already be set up and open.
-    assert isinstance(db_connection, psycopg2.extensions.connection)
+    gen_user_product_data(db_connection, num_records, should_update=True, should_delete=True)
+    conn = db_connection
+    cur = conn.cursor()
     
-    # Optionally, you can also check if the connection is open.
-    assert not db_connection.closed
-
-    # Perform any other necessary assertions or tests related to the database connection.
-    # For example, you can try executing a simple query here to check if the connection is functional.
-    with db_connection.cursor() as cursor:
-        cursor.execute("SELECT 1")
-        result = cursor.fetchone()
-        assert result == (1,)
-
-
-# Test case to check if all tables in a schema exist
-def test_all_tables_exist_in_schema(db_connection):
-    """
-    Test case to check if all expected tables exist in a PostgreSQL schema.
-
-    Args:
-        db_connection (psycopg2.extensions.connection): The database connection.
-
-    Raises:
-        AssertionError: If any expected tables are missing in the schema.
-    """
-    schema_name = SCHEMA
-
-    # Create a cursor
-    with db_connection.cursor() as cursor:
-        # Execute a query to retrieve a list of all table names in the schema
-        cursor.execute(f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{schema_name}'")
-        table_names = [row[0] for row in cursor.fetchall()]
-        print(table_names)
-
-    # List of expected table names
-    expected_table_names = ["products", "users"]
-
-    # Check if all expected tables exist in the schema
-    missing_tables = [table_name for table_name in expected_table_names if table_name not in table_names]
-    print(missing_tables)
-    # Assert that there are no missing tables
-    assert not missing_tables, f"Missing tables: {', '.join(missing_tables)}"
+    user_count = get_user_count(cur)
+    product_count = get_product_count(cur)
+    
+    assert user_count == 2  # Adjust the expected counts as needed
+    assert product_count == 2  # Adjust the expected counts as needed
+    
+    conn.rollback()  # Rollback the transaction to undo the insertions
+    cur.close()

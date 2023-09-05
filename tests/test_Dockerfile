@@ -1,0 +1,24 @@
+FROM python:3.9.17-slim
+
+RUN pip install -U pip
+RUN pip install pipenv
+
+ENV TEST_POSTGRES_USER = ${TEST_POSTGRES_USER}
+ENV TEST_POSTGRES_PASSWORD = ${TEST_POSTGRES_PASSWORD}
+ENV TEST_POSTGRES_DB = ${TEST_POSTGRES_DB}
+ENV TEST_POSTGRES_HOST = ${TEST_POSTGRES_HOST}
+ENV TEST_DB_SCHEMA = ${TEST_DB_SCHEMA}
+
+WORKDIR /test_app/tests/
+
+# lets us import from folders inside /src/loader directly
+ENV PYTHONPATH=/test_app/tests/
+
+COPY [ "Pipfile", "Pipfile.lock", "./" ]
+
+RUN pipenv install --dev --system --deploy
+
+COPY ["./", "./"]
+
+# keep our docker container running
+CMD ["tail", "-f", "/dev/null"]

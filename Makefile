@@ -12,6 +12,12 @@ pg:
 up:
 	docker-compose up -d
 
+tup:
+	docker-compose -f docker-compose-test.yml up -d
+
+tdown:
+	docker-compose -f docker-compose-test.yml down -v
+
 down:
 	docker-compose down -v
 

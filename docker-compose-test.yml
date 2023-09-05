@@ -1,0 +1,38 @@
+services:
+  test_cdc_commerce_postgres:
+    container_name: test_source-db
+    image: debezium/postgres:13-alpine
+    hostname: ${TEST_POSTGRES_HOST}
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: ${TEST_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${TEST_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${TEST_POSTGRES_DB}
+    volumes:
+      - "./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql"
+      # - "./psql_vol:/var/lib/postgresql/data:rw"
+    networks:
+      - my_test_network
+
+  test_suite:
+    build: 
+      context: ./tests
+      dockerfile: ./test_Dockerfile
+    container_name: test_suite
+    restart: on-failure
+    volumes:
+      - "./tests:/test_app/tests/"
+    environment:
+      TEST_POSTGRES_USER: ${TEST_POSTGRES_USER}
+      TEST_POSTGRES_PASSWORD: ${TEST_POSTGRES_PASSWORD}
+      TEST_POSTGRES_DB: ${TEST_POSTGRES_DB}
+      TEST_POSTGRES_HOST: ${TEST_POSTGRES_HOST}
+      DB_SCHEMA: ${DB_SCHEMA}
+    depends_on:
+      - test_cdc_commerce_postgres
+    networks:
+      - my_test_network
+
+networks:
+  my_test_network:

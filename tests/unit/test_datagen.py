@@ -1,22 +1,33 @@
-from user_product_data import *
+from user_product_data import generate_user_data, generate_product_data
 import pytest
-import psycopg2
-import os
+from typing import Dict, Any
 
-TEST_POSTGRES_USER = os.getenv("TEST_POSTGRES_USER")
-TEST_POSTGRES_PASSWORD = os.getenv("TEST_POSTGRES_PASSWORD")
-TEST_POSTGRES_HOSTNAME = os.getenv("TEST_POSTGRES_HOST")
-TEST_POSTGRES_DB = os.getenv("TEST_POSTGRES_DB")
-TEST_SCHEMA = os.getenv("TEST_DB_SCHEMA")
+def test_generate_user_data() -> None:
+    """
+    Test the generate_user_data function.
+
+    Returns:
+        None
+    """
+    user_data = generate_user_data(1)
+    assert isinstance(user_data, dict)
+
+    # Test that the generated username and email_address are not empty
+    assert user_data["username"] != ""
+    assert user_data["email_address"] != ""
 
 
-@pytest.fixture(scope="module")
-def db_connection():
-    conn = psycopg2.connect(
-        database=TEST_POSTGRES_DB,
-        user=TEST_POSTGRES_USER,
-        password=TEST_POSTGRES_PASSWORD,
-        host=TEST_POSTGRES_HOSTNAME,
-    )
-    yield conn
-    conn.close()
+def test_generate_product_data() -> None:
+    """
+    Test the generate_product_data function.
+
+    Returns:
+        None
+    """
+    product_data = generate_product_data(1)
+    assert isinstance(product_data, dict)
+
+    # Test that the generated name, description, and price are not empty or zero
+    assert product_data["name"] != ""
+    assert product_data["description"] != ""
+    assert product_data["price"] > 0.0

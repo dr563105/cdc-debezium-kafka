@@ -2,10 +2,9 @@
 
 Associated blog post for this project - https://dr563105.github.io/posts/2023-08-29-cdc-debezium-kafka-pg/
 
+![](cdc-pipeline.png)
 ## Objective
 Observe and monitor a postgres DB source with a schema `commerce` and tables `users` and `products`. When there is a change in their rows, we will capture those changed data, send it downstream through Apache Kafka and make it available for analytics through `duckDB`.
-
-Before I begin explaining the project's data pipeline in detail, let me quickly give you the steps to reproduce it. This way you can get started already and read the details later.
 
 ## Prerequisites and Setup
 

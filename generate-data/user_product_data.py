@@ -3,7 +3,7 @@ from faker import Faker
 import os
 import psycopg2
 from psycopg2.extensions import cursor
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 Faker.seed(42)
 fake = Faker()
@@ -14,7 +14,9 @@ POSTGRES_HOSTNAME = os.getenv("POSTGRES_HOST")
 POSTGRES_DB = os.getenv("POSTGRES_DB")
 SCHEMA = os.getenv("DB_SCHEMA")
 
-def generate_user_data(id: int) -> Dict[str, Any]:
+
+def generate_user_data(
+        id: int) -> Dict[str, Any]:
     """
     Generate user data.
 
@@ -30,7 +32,8 @@ def generate_user_data(id: int) -> Dict[str, Any]:
         "email_address": fake.email(),
     }
 
-def generate_product_data(id: int) -> Dict[str, Any]:
+def generate_product_data(
+        id: int) -> Dict[str, Any]:
     """
     Generate product data.
 
@@ -47,7 +50,10 @@ def generate_product_data(id: int) -> Dict[str, Any]:
         "price": round(fake.random_int(min=1, max=999_999) / 100.0, 2),
     }
 
-def insert_user_data(conn: str, cur: cursor, user_data: Dict[str, Any]) -> None:
+def insert_user_data(
+        conn: str, 
+        cur: cursor, 
+        user_data: Dict[str, Any]) -> None:
     """
     Insert user data into the database.
 
@@ -71,7 +77,10 @@ def insert_user_data(conn: str, cur: cursor, user_data: Dict[str, Any]) -> None:
     else:
         conn.commit()  # Commit the transaction if there are no errors
 
-def insert_product_data(conn: str, cur: cursor, product_data: Dict[str, Any]) -> None:
+def insert_product_data(
+        conn: str, 
+        cur: cursor, 
+        product_data: Dict[str, Any]) -> None:
     """
     Insert product data into the database.
 
@@ -95,7 +104,12 @@ def insert_product_data(conn: str, cur: cursor, product_data: Dict[str, Any]) ->
     else:
         conn.commit()  # Commit the transaction if there are no errors
 
-def update_records(conn: str, cur: cursor, user_data: Dict[str, Any], product_data: Dict[str, Any]) -> None:
+def update_records(
+        conn: str, 
+        cur: cursor, 
+        user_data: Dict[str, Any], 
+        product_data: Dict[str, Any], 
+        should_update: Optional[bool] = False) -> None:
     """
     Update user and product records in the database with 10% probability
 
@@ -104,12 +118,16 @@ def update_records(conn: str, cur: cursor, user_data: Dict[str, Any], product_da
         cur (cursor): The database cursor.
         user_data (Dict[str, Any]): User data to be updated.
         product_data (Dict[str, Any]): Product data to be updated.
+        should_update (Optional[bool]): Set to True to force the update. Defaults to False.
+
+    Raises:
+        psycopg2.IntegrityError: If a database integrity error occurs during the update.
 
     Returns:
         None
     """
     try:
-        if random.randint(1, 100) >= 90:
+        if should_update or random.randint(1, 100) >= 90:
             new_username = fake.user_name()
             new_name = fake.name()
 
@@ -122,13 +140,17 @@ def update_records(conn: str, cur: cursor, user_data: Dict[str, Any], product_da
                 (new_name, product_data["id"])
             )
     except psycopg2.IntegrityError as e:
-        # Handle any database integrity errors (e.g., unique constraint violations) here
         conn.rollback()  # Rollback the transaction to avoid committing the changes
         raise e  # Re-raise the exception for the test to handle
     else:
         conn.commit()
 
-def delete_records(conn: str, cur: cursor, user_data: Dict[str, Any], product_data: Dict[str, Any]) -> None:
+def delete_records(
+        conn: str, 
+        cur: cursor, 
+        user_data: Dict[str, Any], 
+        product_data: Dict[str, Any], 
+        should_delete: Optional[bool] = False) -> None:
     """
     Delete user and product records from the database with 5% probability.
 
@@ -136,13 +158,14 @@ def delete_records(conn: str, cur: cursor, user_data: Dict[str, Any], product_da
         conn (str): The database connection.
         cur (cursor): The database cursor.
         user_data (Dict[str, Any]): User data to be deleted.
-        product_data (Dict[str, Any]): Product data to be deleted.
+        product_data (Dict[str, Any]): Product data to be deleted        
+        should_delete (Optional[bool]): Set to True to force the delete. Defaults to False.
 
     Returns:
         None
     """
     try:
-        if random.randint(1, 100) >= 95:
+        if should_delete or random.randint(1, 100) >= 95:
             cur.execute(
                 f"DELETE FROM {SCHEMA}.users WHERE id = %s",
                 (user_data["id"],)
@@ -151,44 +174,46 @@ def delete_records(conn: str, cur: cursor, user_data: Dict[str, Any], product_da
                 f"DELETE FROM {SCHEMA}.products WHERE id = %s",
                 (product_data["id"],)
             )
-    except psycopg2.IntegrityError as e:
-        # Handle any database integrity errors (e.g., unique constraint violations) here
+    except Exception as e:
         conn.rollback()  # Rollback the transaction to avoid committing the changes
         raise e  # Re-raise the exception for the test to handle 
     else:
         conn.commit()
 
-def gen_user_product_data(num_records: int) -> None: 
+
+def gen_user_product_data(
+        conn: str,
+        num_records: int,
+        should_update: Optional[bool] = False,
+        should_delete: Optional[bool] = False) -> None: 
     """
     Generate user and product data, and interact with the database.
 
     Args:
+        conn (str): The database connection. 
         num_records (int): Number of records to generate.
+        should_update (Optional[bool]): Set to True to force the update. Defaults to False.
+        should_delete (Optional[bool]): Set to True to force the delete. Defaults to False.
+
 
     Returns:
         Dict[int, Dict[str, Any]]: A dictionary containing generated user and product data.
     """
-    # user_product_data = {}
-    with psycopg2.connect(
-        database=POSTGRES_DB,
-        user=POSTGRES_USER,
-        password=POSTGRES_PASSWORD,
-        host=POSTGRES_HOSTNAME
-    ) as conn:
-        cur = conn.cursor()
+   
+    cur = conn.cursor()
 
-        for id in range(1, num_records + 1):
-            user_data = generate_user_data(id)
-            product_data = generate_product_data(id)
-            # user_product_data[id] = {"user": user_data, "product": product_data}
-            
-            # Insert user and product data into the database
-            insert_user_data(conn, cur, user_data)
-            insert_product_data(conn, cur, product_data)
+    for id in range(1, num_records + 1):
+        user_data = generate_user_data(id)
+        product_data = generate_product_data(id)
+        # user_product_data[id] = {"user": user_data, "product": product_data}
+        
+        # Insert user and product data into the database
+        insert_user_data(conn, cur, user_data)
+        insert_product_data(conn, cur, product_data)
 
-            # Update and delete records
-            update_records(conn, cur, user_data, product_data)
-            delete_records(conn, cur, user_data, product_data)
+        # Update and delete records
+        update_records(conn, cur, user_data, product_data, should_update)
+        delete_records(conn, cur, user_data, product_data, should_delete)
 
 
 if __name__ == "__main__":
@@ -204,4 +229,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     num_records = args.num_records
-    gen_user_product_data(num_records)
+    with psycopg2.connect(
+        database=POSTGRES_DB, 
+        user=POSTGRES_USER, 
+        password=POSTGRES_PASSWORD, 
+        host=POSTGRES_HOSTNAME) as conn:
+        gen_user_product_data(conn,num_records)

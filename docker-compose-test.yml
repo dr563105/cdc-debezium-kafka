@@ -11,7 +11,7 @@ services:
       POSTGRES_DB: ${TEST_POSTGRES_DB}
     volumes:
       - "./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql"
-      # - "./psql_vol:/var/lib/postgresql/data:rw"
+      - "./test_psql_vol:/var/lib/postgresql/data:rw"
     networks:
       - my_test_network
 
@@ -19,6 +19,7 @@ services:
     build: 
       context: ./tests
       dockerfile: ./test_Dockerfile
+    image: cdc-test-suite
     container_name: test_suite
     restart: on-failure
     volumes:

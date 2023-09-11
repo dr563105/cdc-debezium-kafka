@@ -9,6 +9,7 @@ Faker = "==19.3.1"
 
 [dev-packages]
 pytest= "*"
+kafka-python = "*"
 
 [requires]
 python_version = "3.9"

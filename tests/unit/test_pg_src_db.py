@@ -71,13 +71,12 @@ def test_all_tables_exist_in_schema(db_connection):
         # Execute a query to retrieve a list of all table names in the schema
         cursor.execute(f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{schema_name}'")
         table_names = [row[0] for row in cursor.fetchall()]
-        print(table_names)
 
     # List of expected table names
     expected_table_names = ["products", "users"]
 
     # Check if all expected tables exist in the schema
     missing_tables = [table_name for table_name in expected_table_names if table_name not in table_names]
-    print(missing_tables)
+    
     # Assert that there are no missing tables
     assert not missing_tables, f"Missing tables: {', '.join(missing_tables)}"

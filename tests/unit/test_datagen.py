@@ -1,5 +1,4 @@
 from user_product_data import generate_user_data, generate_product_data
-import pytest
 from typing import Dict, Any
 
 def test_generate_user_data() -> None:

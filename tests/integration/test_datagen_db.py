@@ -9,7 +9,8 @@ TEST_POSTGRES_USER = os.getenv("TEST_POSTGRES_USER")
 TEST_POSTGRES_PASSWORD = os.getenv("TEST_POSTGRES_PASSWORD")
 TEST_POSTGRES_HOSTNAME = os.getenv("TEST_POSTGRES_HOST")
 TEST_POSTGRES_DB = os.getenv("TEST_POSTGRES_DB")
-TEST_SCHEMA = os.getenv("TEST_DB_SCHEMA")
+SCHEMA = os.getenv("DB_SCHEMA", "commerce") #using TEST_DB_SCHEMA just isn't working
+
 
 @pytest.fixture(scope="module")
 def db_connection():
@@ -88,6 +89,7 @@ def test_insert_product_data(db_connection, id):
     conn.rollback()  # Rollback the transaction to undo the insertion
     cur.close()
 
+
 @pytest.mark.parametrize("id", [random.randint(100, 114)])
 def test_update_records(db_connection, id):
     """
@@ -150,6 +152,7 @@ def get_product_count(cur):
     """
     cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.products")
     return cur.fetchone()[0]
+
 
 @pytest.mark.parametrize("id", [random.randint(46, 64)])
 def test_delete_records(db_connection,id):

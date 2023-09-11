@@ -7,11 +7,10 @@ ENV TEST_POSTGRES_USER = ${TEST_POSTGRES_USER}
 ENV TEST_POSTGRES_PASSWORD = ${TEST_POSTGRES_PASSWORD}
 ENV TEST_POSTGRES_DB = ${TEST_POSTGRES_DB}
 ENV TEST_POSTGRES_HOST = ${TEST_POSTGRES_HOST}
-ENV TEST_DB_SCHEMA = ${TEST_DB_SCHEMA}
+ENV DB_SCHEMA = ${DB_SCHEMA}
 
 WORKDIR /test_app/tests/
 
-# lets us import from folders inside /src/loader directly
 ENV PYTHONPATH=/test_app/tests/
 
 COPY [ "Pipfile", "Pipfile.lock", "./" ]

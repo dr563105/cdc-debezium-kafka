@@ -61,3 +61,23 @@ make down #shuts down all project processes and docker containers
 # to delete minio buckets with json files
 sudo rm -rf minio/ psql_vol/
 ```
+
+## Testing
+
+For testing a separate testing environment with each component is created. To get started, execute the following commands sequentially.
+
+```bash
+export TEST_POSTGRES_USER=test_postgres
+export TEST_POSTGRES_PASSWORD=test_postgres
+export TEST_POSTGRES_DB=test_cdc-demo-db
+export TEST_POSTGRES_HOST=test_postgres
+export TEST_DB_SCHEMA=commerce
+export TEST_AWS_KEY_ID=test_minio
+export TEST_AWS_SECRET_KEY=test_minio123
+export TEST_AWS_BUCKET_NAME=commerce
+
+make tsetup #tests end-to-end
+
+make tdown #shutdown all resources
+# sudo rm -rf test_minio/ test_psql_vol/
+```

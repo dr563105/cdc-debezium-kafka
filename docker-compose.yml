@@ -83,8 +83,8 @@ services:
     volumes:
       - "./minio/data:/data"
     environment:
-      MINIO_ACCESS_KEY: ${AWS_KEY_ID}
-      MINIO_SECRET_KEY: ${AWS_SECRET_KEY}
+      MINIO_ROOT_USER: ${AWS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${AWS_SECRET_KEY}
     command: [ "server", "/data", "--console-address", ":9001" ]
     networks:
       - my_network
@@ -95,7 +95,14 @@ services:
     depends_on:
       - minio
     entrypoint: >
-      /bin/sh -c "  /usr/bin/mc config host add myminio http://minio:9000 ${AWS_KEY_ID} ${AWS_SECRET_KEY}; /usr/bin/mc rm -rf myminio/commerce;  /usr/bin/mc mb myminio/commerce;  /usr/bin/mc policy set public myminio/commerce; exit 0; "
+      /bin/sh -c " sleep 3; 
+      /usr/bin/mc config host add myminio http://minio:9000 ${AWS_KEY_ID} ${AWS_SECRET_KEY}; 
+      sleep 1;
+      /usr/bin/mc rm -r --force myminio/commerce;  
+      /usr/bin/mc mb myminio/commerce;  
+      /usr/bin/mc anonymous set download myminio/commerce; 
+      /usr/bin/mc anonymous set public myminio/commerce; 
+      exit 0; "
     networks:
       - my_network
 

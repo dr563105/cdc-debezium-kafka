@@ -13,7 +13,9 @@ up:
 	docker-compose up -d
 
 tup:
-	docker-compose -f docker-compose-test.yml up -d
+	docker-compose -f docker-compose-test.yml up -d 
+	@echo -n "Starting up the containers..."
+	@sleep 30
 
 tdown:
 	docker-compose -f docker-compose-test.yml down -v
@@ -32,3 +34,10 @@ s3-sink:
 
 connections: 
 	source ./connectors/setup-connections.sh
+
+tc:
+	. ./tests/tc.sh
+	@echo -n "Getting the system ready..."
+	@sleep 10
+
+tsetup: tup tc ci

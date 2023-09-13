@@ -9,8 +9,17 @@ install_docker:
 pg:
 	pgcli -h localhost -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 
-up:
+buildup:
 	docker-compose up -d
+	@echo -n "Starting up the containers..."
+	@sleep 30
+
+connections: 
+	source ./connectors/setup-connections.sh
+	@echo -n "Getting the system ready..."
+	@sleep 10
+
+up: buildup connections
 
 tup:
 	docker-compose -f docker-compose-test.yml up -d 
@@ -31,9 +40,6 @@ pg-src:
 
 s3-sink:
 	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '@./connectors/s3-sink.json'
-
-connections: 
-	source ./connectors/setup-connections.sh
 
 tc:
 	. ./tests/tc.sh

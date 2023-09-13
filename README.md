@@ -44,9 +44,7 @@ export POSTGRES_HOST=postgres
 export AWS_KEY_ID=minio
 export AWS_SECRET_KEY=minio123
 export AWS_BUCKET_NAME=commerce
-make up # runs all docker containers
-#wait for 60 seconds allow all containers to be up and running
-make connections # setup connectors
+make up # runs all docker containers and connections
 #wait for 100-120 seconds to allow data to be pushed to Minio(S3).
 ```
 Open a browser and go to `localhost:9001` to open up `Minio UI`. Login with `minio` as username and `minio123` as password. Then navigate to `buckets` -> `commerce` -> debezium.commerce.products` and further to get to the `json` files. Similarly to reach `debezium.commerce.users` table `json` files.

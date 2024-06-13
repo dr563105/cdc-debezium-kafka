@@ -22,7 +22,7 @@ To make things easier I have scripted these prerequisites. Just clone my repo an
 
 ```{.bash filename="clone and install prerequisites"}
 sudo apt update && sudo apt install git make -y
-git clone 
+git clone https://github.com/dr563105/cdc-pg-dbz-kafka-s3.git
 cd dbz-kafka-pg
 make install_conda
 make install_docker
@@ -44,6 +44,7 @@ export POSTGRES_HOST=postgres
 export AWS_KEY_ID=minio
 export AWS_SECRET_KEY=minio123
 export AWS_BUCKET_NAME=commerce
+export DB_SCHEMA=commerce
 make up # runs all docker containers and connections
 #wait for 100-120 seconds to allow data to be pushed to Minio(S3).
 ```

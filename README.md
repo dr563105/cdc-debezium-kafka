@@ -50,6 +50,8 @@ make up # runs all docker containers and connections
 ```
 Open a browser and go to `localhost:9001` to open up `Minio UI`. Login with `minio` as username and `minio123` as password. Then navigate to `buckets` -> `commerce` -> debezium.commerce.products` and further to get to the `json` files. Similarly to reach `debezium.commerce.users` table `json` files.
 
+**Note:** In some cloud platforms such GCP and Azure, `localhost` doesn't work. In that case, use server's public ip address -- `<public_ipaddress>:9001` to access `minio`.
+
 These `json` files contain the change data(Upsert and delete) for respective tables. From here we can use `duckdb` to analyse data. There you have it,  a complete data pipeline that fetches change data from the source and brings it to the sink(downstream).
 
 ### Deleting resources

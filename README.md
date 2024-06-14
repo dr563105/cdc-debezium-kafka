@@ -23,7 +23,7 @@ To make things easier I have scripted these prerequisites. Just clone my repo an
 ```{.bash filename="clone and install prerequisites"}
 sudo apt update && sudo apt install git make -y
 git clone https://github.com/dr563105/cdc-pg-dbz-kafka-s3.git
-cd dbz-kafka-pg
+cd cdc-pg-dbz-kafka-s3
 make install_conda
 make install_docker
 source ~/.bashrc

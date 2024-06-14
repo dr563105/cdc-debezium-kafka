@@ -11,13 +11,13 @@ pg:
 
 buildup:
 	docker-compose up -d
-	@echo -n "Starting up the containers..."
-	@sleep 30
+	@echo -n "Starting up the containers. Please wait..."
+	@sleep 80
 
 connections: 
 	source ./connectors/setup-connections.sh
-	@echo -n "Getting the system ready..."
-	@sleep 10
+	@echo -n "Getting the system ready. Please wait..."
+	@sleep 30
 
 up: buildup connections
 

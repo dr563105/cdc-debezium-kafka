@@ -36,7 +36,7 @@ docker run --rm hello-world # should return "Hello from Docker!" without errors
 
 Now we're ready to execute our project.
 ```{.bash filename="Executing CDC project"}
-cd dbz-kafka-pg
+cd cdc-pg-dbz-kafka-s3
 export POSTGRES_USER=postgres
 export POSTGRES_PASSWORD=postgres
 export POSTGRES_DB=cdc-demo-db

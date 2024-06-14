@@ -22,8 +22,8 @@ To make things easier I have scripted these prerequisites. Just clone my repo an
 
 ```{.bash filename="clone and install prerequisites"}
 sudo apt update && sudo apt install git make -y
-git clone https://github.com/dr563105/cdc-pg-dbz-kafka-s3.git
-cd cdc-pg-dbz-kafka-s3
+git clone https://github.com/dr563105/cdc-debezium-kafka.git
+cd cdc-debezium-kafka
 make install_conda
 make install_docker
 source ~/.bashrc
@@ -34,9 +34,8 @@ Logout and log in back to the instance. To test docker if it is working, run
 docker run --rm hello-world # should return "Hello from Docker!" without errors
 ```
 
-Now we're ready to execute our project.
-```{.bash filename="Executing CDC project"}
-cd cdc-pg-dbz-kafka-s3
+**Set environment variables**:
+```{.bash filename="Setting env variables"}
 export POSTGRES_USER=postgres
 export POSTGRES_PASSWORD=postgres
 export POSTGRES_DB=cdc-demo-db
@@ -45,6 +44,11 @@ export AWS_KEY_ID=minio
 export AWS_SECRET_KEY=minio123
 export AWS_BUCKET_NAME=commerce
 export DB_SCHEMA=commerce
+```
+
+Now we're ready to execute our project.
+```{.bash filename="Executing CDC project"}
+cd cdc-debezium-kafka
 make up # runs all docker containers and connections
 #wait for 100-120 seconds to allow data to be pushed to Minio(S3).
 ```

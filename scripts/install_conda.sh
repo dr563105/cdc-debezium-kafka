@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cd ~
-wget -q https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.1-0-Linux-x86_64.sh -O Miniconda3-py39_23.5.1-0-Linux-x86_64.sh
-bash Miniconda3-py39_23.5.1-0-Linux-x86_64.sh -b
-~/miniconda3/bin/conda init $SHELL_NAME
-rm Miniconda3-py39_23.5.1-0-Linux-x86_64.sh
-cd ~/cdc-pg-dbz-kafka-s3
+wget -q https://github.com/conda-forge/miniforge/releases/download/23.11.0-0/Miniforge3-23.11.0-0-Linux-x86_64.sh -O Miniforge3-23.11.0-0-Linux-x86_64.sh
+bash Miniforge3-23.11.0-0-Linux-x86_64.sh -b
+~/miniforge3/bin/conda init $SHELL_NAME
+rm Miniforge3-23.11.0-0-Linux-x86_64.sh
+cd ~/cdc-debezium-kafka

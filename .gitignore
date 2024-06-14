@@ -5,3 +5,4 @@ secrets/
 *cache*
 test_psql_vol/
 *minio*
+.vscode/
